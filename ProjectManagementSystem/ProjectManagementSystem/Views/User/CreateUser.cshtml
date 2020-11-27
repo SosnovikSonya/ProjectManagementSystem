@@ -1,0 +1,56 @@
+﻿@model ProjectManagementSystem.Views.ViewModels.UserModels.User
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>CreateUser</title>
+    <link rel="stylesheet" href="~/css/login.css" />
+
+</head>
+<body>
+
+    <hr />
+    <div class="form">
+        <div class="form-panel one">
+            <h3>Создать пользователя</h3>
+
+            <form asp-action="CreateUser">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <div class="form-group">
+                    <label asp-for="FirstName" class="control-label"></label>
+                    <input asp-for="FirstName" class="form-control" />
+                    <span asp-validation-for="FirstName" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="LastName" class="control-label"></label>
+                    <input asp-for="LastName" class="form-control" />
+                    <span asp-validation-for="LastName" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Email" class="control-label"></label>
+                    <input asp-for="Email" class="form-control" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Password" class="control-label"></label>
+                    <input asp-for="Password" class="form-control" />
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Role" class="control-label"></label>
+                    @Html.DropDownListFor(model => model.Role, ViewBag.UserRoles as SelectList, new { @class = "form-control" })
+                    <span asp-validation-for="Role" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-default">Создать</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+</body>
+</html>

@@ -1,0 +1,51 @@
+﻿@model ProjectManagementSystem.Views.ViewModels.UserModels.User
+
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Account</title>
+</head>
+<body>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="form-group">
+                <hr />
+                <h3>Личная информация</h3>
+
+                <dl class="dl-horizontal">
+                    <dt>
+                        <label asp-for="FirstName" class="control-label"></label>
+                    </dt>
+                    <dd>
+                        <label>@Model.FirstName</label>
+                    </dd>
+                    <dt>
+                        <label asp-for="LastName" class="control-label"></label>
+                    </dt>
+                    <dd>
+                        <label>@Model.LastName</label>
+                    </dd>
+                    <dt>
+                        <label asp-for="Email" class="control-label"></label>
+                    </dt>
+                    <dd>
+                        <label>@Model.Email</label>
+                    </dd>
+                    <dt>
+                        <label asp-for="Password" class="control-label"></label>
+                    </dt>
+                    <dd>
+                        <label>@Model.Password</label>
+                    </dd>
+                </dl>
+
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,42 @@
+﻿@model ProjectManagementSystem.Views.ViewModels.UserModels.UserLogin
+
+@{
+    ViewData["Title"] = "Авторизация";
+}
+
+<link rel="stylesheet" href="~/css/login.css" />
+
+<hr />
+
+<div class="form">
+    <div class="form-panel one">
+        <div class="form-header">
+            <h1>Авторизация</h1>
+        </div>
+        <div class="form-content">
+            <form asp-action="Login" method="post">
+                <div class="form-group">
+                    <label asp-for="Email" class="control-label"></label>
+                    <input asp-for="Email" class="form-control" required type="email" id="Email" name="Email" formControlName="Email" />
+
+                </div>
+                <div class="form-group">
+
+                    <label asp-for="Password" class="control-label"></label>
+                    <input asp-for="Password" class="form-control" required type="password" id="Password" name="Password" formControlName="Password" />
+                    <span asp-validation-for="Password" class="text-danger"></span>
+
+                </div>
+                <p></p>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-default">Войти</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

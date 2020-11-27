@@ -1,0 +1,91 @@
+﻿@model ProjectManagementSystem.Views.ViewModels.ProjectModels.ProjectBoard
+
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>ProjectBoard</title>
+    <link rel="stylesheet" href="~/css/login.css" />
+
+</head>
+<body>
+
+    <div class="row">
+        <h2> @Html.DisplayFor(model => model.Project.Title)</h2>
+    </div>
+    <br />
+
+    <div class="row">
+        <h4> @Html.DisplayFor(model => model.Project.Description)</h4>
+    </div>
+    <br />
+
+    <div class="row">
+
+        <div class="col-md-4">
+            <h4 style="align-content:center">To Do</h4>    <br />
+
+            @foreach (var item in Model.WorkItems.ToList())
+            {
+                @if (item.State.StateName == "To Do")
+                {
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-default" style="width:250px; height:50px"
+                                onclick="location.href='@Url.Action("GetUpdateWorkItemView", "WorkItem", new {id = item.Id}, null)'">
+                            @item.Title
+                        </button>
+                    </div>
+                    <br />
+
+                }
+            }
+
+        </div>
+
+
+        <div class="col-md-4">
+            <h4 style="align-content:center">In Progress</h4>    <br />
+
+            @foreach (var item in Model.WorkItems.ToList())
+            {
+                @if (item.State.StateName == "In Progress")
+                {
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-default" style="width:250px; height:50px"
+                                onclick="location.href='@Url.Action("GetUpdateWorkItemView", "WorkItem", new {id = item.Id}, null)'">
+                            @item.Title
+                        </button>
+                    </div>
+                    @*<button type="submit" class="btn btn-default" style="width:250px; height:50px">
+                            @item.Title
+                        </button>*@
+                    <br />
+
+                }
+            }
+        </div>
+
+        <div class="col-md-4">
+            <h4 style="align-content:center">Done</h4>    <br />
+
+            @foreach (var item in Model.WorkItems.ToList())
+            {
+                @if (item.State.StateName == "Done")
+                {
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-default" style="width:250px; height:50px"
+                                onclick="location.href='@Url.Action("GetUpdateWorkItemView", "WorkItem", new {id = item.Id}, null)'">
+                            @item.Title
+                        </button>
+                    </div>
+                    <br />
+
+                }
+            }
+        </div>
+
+    </div>
+</body>
+</html>
