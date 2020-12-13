@@ -9,10 +9,10 @@ namespace ProjectManagementSystem.Models.Interfaces
     {
         string Title { get; set; }
         string Description { get; set; }
-        int CreatorId { get; set; }
-        int AppointedToId { get; set; }
-        int ProjectId { get; set; }
-        int TypeId { get; set; }
-        int StateId { get; set; }
+        IUser Creator { get; set; }
+        IUser AppointedTo { get; set; }
+        IProject Project { get; set; }
+        IWorkItemType Type { get; set; }
+        IWorkItemState State { get; set; }
     }
 }

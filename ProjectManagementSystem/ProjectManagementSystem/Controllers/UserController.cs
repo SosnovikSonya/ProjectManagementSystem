@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -12,23 +9,15 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using ProjectManagementSystem.Models.Interfaces;
 using ProjectManagementSystem.Repository;
 using ProjectManagementSystem.Views.ViewModels.UserModels;
-using System.Net;
-using System.Net.Mail;
+using ProjectManagementSystem.Views.ViewModels.ProjectModels;
+using Newtonsoft.Json;
 
 namespace ProjectManagementSystem.Controllers
 {
     [Route("user")]
-    public class UserController : Controller
+    public class UserController : BaseController
     {
-        IRepository Repository { get; set; }
-
-        private IMapper Mapper { get; set; }
-
-        public UserController(IMapper mapper, IRepository repository)
-        {
-            Mapper = mapper;
-            Repository = repository;
-        }
+        public UserController(IMapper mapper, IRepository repository) : base(mapper, repository) { }
 
         [HttpGet("login")]
         public IActionResult GetAuthorizationView()
@@ -45,6 +34,11 @@ namespace ProjectManagementSystem.Controllers
             if (dbUser != null)
             {
                 Authorize(userLogin.Email);
+                var projects = Repository.Projects
+                    .Search(project => true)
+                    .Select(project => Mapper.Map<Project>(project));
+                var stringProjects = JsonConvert.SerializeObject(projects);
+                this.Response.Cookies.Append("projects", stringProjects);
                 return RedirectToAction("Index", "Home");
             }
             else
@@ -71,13 +65,8 @@ namespace ProjectManagementSystem.Controllers
         {
             var userRoles = Repository.UserRoles
                 .Search((role) => true)
-                .Select(role => Mapper.Map<UserRole>(role));
-            var roles = new List<string>();
-            foreach (var item in userRoles)
-            {
-                roles.Add(item.RoleName);
-            }
-            ViewBag.UserRoles = new SelectList(roles);
+                .Select(role => Mapper.Map<UserRole>(role).RoleName);
+            ViewBag.UserRoles = new SelectList(userRoles);
             return View("CreateUser");
         }
 
@@ -94,7 +83,7 @@ namespace ProjectManagementSystem.Controllers
             //    mm.To.Add(new MailAddress("sofyasosnovik2000@gmail.com"));  // replace with valid value 
             //    mm.From = new MailAddress("sofiyasosnovik2001@gmail.com");  // replace with valid value
             //    mm.Subject = "Your email subject";                mm.Body = "Hello";
-                
+
             //    mm.IsBodyHtml = false;
             //    using (SmtpClient smtp = new SmtpClient())
             //    {
@@ -117,26 +106,27 @@ namespace ProjectManagementSystem.Controllers
         public IActionResult GetUpdateUserView(User user)
         {
             var currentUser = Mapper.Map<User>(Repository.Users.FindById(user.Id));
-           
+            var userRoles = Repository.UserRoles
+                .Search((role) => true)
+                .Select(role => Mapper.Map<UserRole>(role).RoleName);
+            ViewBag.UserRoles = new SelectList(userRoles);
+
             return View("UpdateUser", currentUser);
         }
 
         //Role not mapped
         [HttpPost("update")]
-        public IActionResult UpdateUser(User currentUser)
+        public IActionResult UpdateUser(User updatedUserView)
         {
-            var updatedUser = Mapper.Map<IUser>(currentUser);
+            var updatedUser = Mapper.Map<IUser>(updatedUserView);
+            var updatedRole = Repository.UserRoles
+                .Search(role => role.RoleName == updatedUser.UserRole.RoleName)
+                .Single();
 
-            var existingUser = Repository.Users.FindById(updatedUser.Id);
-            existingUser.FirstName = updatedUser.FirstName;
-            existingUser.LastName = updatedUser.LastName;
-            existingUser.Email = updatedUser.Email;
-            existingUser.Password = updatedUser.Password;
-            //existingUser.UserRole = Repository.UserRoles.Search(role => role.RoleName == currentUser.Role).First();
-
-            Repository.Users.Modify(existingUser);
+            updatedUser.UserRole = updatedRole;
+            Repository.Users.Modify(updatedUser);
             Repository.Save();
-           
+
             return RedirectToAction("GetAllUsersView", "User");
         }
 
@@ -164,7 +154,7 @@ namespace ProjectManagementSystem.Controllers
             if (User.Identity.IsAuthenticated)
             {
                 var us = Repository.Users.Search(user => user.Email == User.Identity.Name).SingleOrDefault();
-                var accountUser = Mapper.Map<User>(us);                
+                var accountUser = Mapper.Map<User>(us);
                 return View(accountUser);
             }
             else
@@ -173,15 +163,14 @@ namespace ProjectManagementSystem.Controllers
             }
         }
 
-
         [HttpPost]
         public ActionResult Logout()
         {
             HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            AuthContext.Logout(User.Identity.Name);
             return RedirectToAction("Index", "Home");
         }
 
-       
         private void Authorize(string name)
         {
             // создаем один claim
@@ -193,6 +182,8 @@ namespace ProjectManagementSystem.Controllers
             ClaimsIdentity id = new ClaimsIdentity(claims, "ApplicationCookie", ClaimsIdentity.DefaultNameClaimType, ClaimsIdentity.DefaultRoleClaimType);
             // установка аутентификационных куки
             HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(id)).Wait();
+            var user = Mapper.Map<User>(Repository.Users.Search(dbUser => dbUser.Email == name).Single());
+            AuthContext.SetCurrentUser(user);
         }
     }
 }

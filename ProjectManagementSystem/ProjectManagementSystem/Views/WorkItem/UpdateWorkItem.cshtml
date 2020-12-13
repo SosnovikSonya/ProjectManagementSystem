@@ -5,32 +5,35 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width" />
+    <title>UpdateWorkItem</title>
     <link rel="stylesheet" href="~/css/login.css" />
+
 </head>
 <body>
+
     <div class="form">
         <div class="form-panel one">
             <div class="form-header">
-                <h1>Создать новую задачу</h1>
+                <h1>Редактировать задачу</h1>
             </div>
-            <form asp-action="CreateWorkItem">
+            <form asp-action="UpdateWorkItem">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
                 <div class="form-group">
                     <label asp-for="Project" class="control-label"></label>
-                    @Html.DropDownListFor(model => model.Project.Title, ViewBag.Projects as SelectList, new { @class = "form-control" })
+                    <input asp-for="Project.Title" class="form-control" disabled />
                     <span asp-validation-for="Project" class="text-danger"></span>
                 </div>
 
                 <div class="form-group">
                     <label asp-for="Type" class="control-label"></label>
-                    @Html.DropDownListFor(model => model.Type.TypeName, ViewBag.Types as SelectList, new { @class = "form-control" })
+                    <input asp-for="Type.TypeName" class="form-control" disabled />
                     <span asp-validation-for="Type" class="text-danger"></span>
                 </div>
 
                 <div class="form-group">
                     <label asp-for="Title" class="control-label"></label>
-                    <input asp-for="Title" class="form-control" />
+                    <input asp-for="Title" class="form-control" disabled />
                     <span asp-validation-for="Title" class="text-danger"></span>
                 </div>
                 <div class="form-group">
@@ -46,7 +49,13 @@
                 </div>
 
                 <div class="form-group">
-                    <button type="submit" class="btn btn-default">Создать</button>
+                    <label asp-for="State" class="control-label"></label>
+                    @Html.DropDownListFor(model => model.State.StateName, ViewBag.States as SelectList, new { @class = "form-control" })
+                    <span asp-validation-for="State" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <button type="submit" class="btn btn-default">Редактировать</button>
                 </div>
             </form>
         </div>

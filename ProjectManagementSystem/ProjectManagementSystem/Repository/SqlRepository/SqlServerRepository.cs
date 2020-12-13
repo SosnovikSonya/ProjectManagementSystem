@@ -90,7 +90,6 @@ namespace ProjectManagementSystem.Repository.SqlRepository
 
         private List<TTarget> CheckDeletedAndMap<TTarget, TDb>(IEnumerable<TDb> dbCollection) where TDb : class, ITable
         {
-            var asdasd = DbContext.Users.Include(a => a.UserRole).ToList();
             var resultCollection = new List<TTarget>();
             foreach (var dbItem in dbCollection)
             {

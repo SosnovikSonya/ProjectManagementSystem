@@ -128,7 +128,7 @@ body {
   .two .form-group input:focus {
     color: #ffffff;
   }
-  .form-group button {
+.form-group button {
     outline: none;
     background: #4285f4;
     width: 100%;
@@ -142,11 +142,14 @@ body {
     line-height: inherit;
     text-transform: uppercase;
     cursor: pointer;
-  }
+    /*word-wrap: break-word;*/
+}
   .two .form-group button {
     background: #ffffff;
     color: #4285f4;
   }
+
+
   .form-group .form-remember {
     font-size: 12px;
     font-weight: 400;

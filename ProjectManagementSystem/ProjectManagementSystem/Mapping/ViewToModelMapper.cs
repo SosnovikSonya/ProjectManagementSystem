@@ -18,7 +18,8 @@ namespace ProjectManagementSystem.Mapping
         {
             CreateMap<ViewModels.User, IUser>()
                    .ConstructUsing(viewEntity => DependencyContainer.Resolve<IUser>())
-                   .ForMember(viewEntity => viewEntity.UserRole, mapper => mapper.MapFrom(src => DependencyContainer.Resolve<IUserRole>()));
+                   .ForMember(user => user.UserRole, mapper => mapper.MapFrom(src => DependencyContainer.Resolve<IUserRole>()))
+                   .AfterMap((viewEntity, user) => user.UserRole.RoleName = viewEntity.Role);
 
             //       .ForMember(
             //    dest => dest.UserRole,
@@ -55,11 +56,20 @@ namespace ProjectManagementSystem.Mapping
             CreateMap<IWorkItemType, WorkItemType>();
 
 
-            CreateMap<WorkItem, IWorkItem>().
-                ConstructUsing(viewEntity => DependencyContainer.Resolve<IWorkItem>());
+            CreateMap<WorkItem, IWorkItem>()
+                .ForMember(iWI => iWI.Creator, mapper => mapper.MapFrom(src => src.Creator))
+                .ForMember(iWI => iWI.AppointedTo, mapper => mapper.MapFrom(src => src.AppointedTo))
+                .ForMember(iWI => iWI.Project, mapper => mapper.MapFrom(src => src.Project))
+                .ForMember(iWI => iWI.State, mapper => mapper.MapFrom(src => src.State))
+                .ForMember(iWI => iWI.Type, mapper => mapper.MapFrom(src => src.Type))
+                .ConstructUsing(viewEntity => DependencyContainer.Resolve<IWorkItem>());
 
-            CreateMap<IWorkItem, WorkItem>();
-
+            CreateMap<IWorkItem, WorkItem>()
+                .ForMember(wi => wi.Creator, mapper => mapper.MapFrom(src => src.Creator))
+                .ForMember(wi => wi.AppointedTo, mapper => mapper.MapFrom(src => src.AppointedTo))
+                .ForMember(wi => wi.Project, mapper => mapper.MapFrom(src => src.Project))
+                .ForMember(wi => wi.State, mapper => mapper.MapFrom(src => src.State))
+                .ForMember(wi => wi.Type, mapper => mapper.MapFrom(src => src.Type));
         }
     }
 }

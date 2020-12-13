@@ -14,17 +14,9 @@ using ProjectManagementSystem.Views.ViewModels.ProjectModels;
 namespace ProjectManagementSystem.Controllers
 {
     [Route("workitem")]
-    public class WorkItemController : Controller
+    public class WorkItemController : BaseController
     {
-        IRepository Repository { get; set; }
-
-        private IMapper Mapper { get; set; }
-
-        public WorkItemController(IMapper mapper, IRepository repository)
-        {
-            Mapper = mapper;
-            Repository = repository;
-        }
+        public WorkItemController(IMapper mapper, IRepository repository) : base(mapper, repository) { }
 
         [HttpGet("create")]
         public IActionResult GetWorkItemCreationView()
@@ -53,7 +45,7 @@ namespace ProjectManagementSystem.Controllers
 
             var users = Repository.Users
                 .Search((user) => true)
-                .Where(user => user.Email != User.Identity.Name && user.UserRole.RoleName != "Administrator")
+                .Where(user => user.UserRole.RoleName != "Administrator")
                 .Select(user => Mapper.Map<User>(user))
                 .ToList();
             var userNames = new List<string>();
@@ -73,21 +65,21 @@ namespace ProjectManagementSystem.Controllers
         {
             var workItem = Mapper.Map<IWorkItem>(createWorkItem);
 
-            workItem.ProjectId = Repository.Projects.Search(proj => proj.Title == createWorkItem.Project.Title)
-                .FirstOrDefault().Id;
-            workItem.StateId = Repository.WorkItemStates.Search(state => state.StateName == "To Do")
-                .FirstOrDefault().Id;
-            workItem.TypeId = Repository.WorkItemTypes.Search(type => type.TypeName == createWorkItem.Type.TypeName)
-                .FirstOrDefault().Id;
-            workItem.CreatorId = Repository.Users.Search(user => user.Email == User.Identity.Name)
-                .FirstOrDefault().Id;
-            workItem.AppointedToId = Repository.Users.Search(user => createWorkItem.AppointedTo.FirstName.Contains(user.FirstName) && createWorkItem.AppointedTo.FirstName.Contains(user.LastName))
-                .FirstOrDefault().Id;
+            workItem.Project = Repository.Projects.Search(proj => proj.Title == createWorkItem.Project.Title)
+                .FirstOrDefault();
+            workItem.State = Repository.WorkItemStates.Search(state => state.StateName == "To Do")
+                .FirstOrDefault();
+            workItem.Type = Repository.WorkItemTypes.Search(type => type.TypeName == createWorkItem.Type.TypeName)
+                .FirstOrDefault();
+            workItem.Creator = Repository.Users.Search(user => user.Email == User.Identity.Name)
+                .FirstOrDefault();
+            workItem.AppointedTo = Repository.Users.Search(user => createWorkItem.AppointedTo.FirstName.Contains(user.FirstName) && createWorkItem.AppointedTo.FirstName.Contains(user.LastName))
+                .FirstOrDefault();
 
             Repository.WorkItems.Add(workItem);
             Repository.Save();
 
-            var projectId = workItem.ProjectId;
+            var projectId = workItem.Project.Id;
             return RedirectToAction("GetProjectBoardView", "Project", projectId);
         }
 
@@ -96,6 +88,28 @@ namespace ProjectManagementSystem.Controllers
         {
             var workItem = Mapper.Map<WorkItem>(Repository.WorkItems.FindById(id));
 
+            var states = Repository.WorkItemStates
+              .Search((state) => true)
+              .Select(state => Mapper.Map<WorkItemState>(state))
+              .ToList();
+            var stateNames = new List<string>();
+            foreach (var item in states)
+            {
+                stateNames.Add(item.StateName);
+            }
+            ViewBag.States = new SelectList(stateNames);
+
+            var users = Repository.Users
+                .Search((user) => true)
+                .Where(user => user.UserRole.RoleName != "Administrator")
+                .Select(user => Mapper.Map<User>(user))
+                .ToList();
+            var userNames = new List<string>();
+            foreach (var item in users)
+            {
+                userNames.Add(item.FirstName + " " + item.LastName);
+            }
+            ViewBag.Users = new SelectList(userNames);
 
             return View("UpdateWorkItem", workItem);
         }
@@ -110,5 +124,17 @@ namespace ProjectManagementSystem.Controllers
 
             return RedirectToAction("GetProjectBoardView", "Project" /*, projectId*/);
         }
+
+        [HttpGet("all")]
+        public IActionResult AllWorkItems()
+        {
+            var allWorkItems = Repository.WorkItems.Search(wi => true)
+               .Select(wi => Mapper.Map<WorkItem>(wi));
+
+            return View("AllWorkItems", allWorkItems);
+
+        }
+
+        
     }
 }

@@ -11,10 +11,10 @@ namespace ProjectManagementSystem.Models.Implementations
         public int Id { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
-        public int CreatorId { get; set; }
-        public int AppointedToId { get; set; }
-        public int ProjectId { get; set; }
-        public int TypeId { get; set; }
-        public int StateId { get; set; }
+        public IUser Creator { get; set; }
+        public IUser AppointedTo { get; set; }
+        public IProject Project { get; set; }
+        public IWorkItemType Type { get; set; }
+        public IWorkItemState State { get; set; }
     }
 }

@@ -1,0 +1,66 @@
+﻿@model IEnumerable<ProjectManagementSystem.Views.ViewModels.WorkItemModels.WorkItem>
+
+@{
+    ViewData["Title"] = "AllWorkItems";
+}
+
+<style>
+    .prokrutka {
+        height: 450px; /* высота нашего блока */
+        width: 412px; /* ширина нашего блока */
+        background: #fff; /* цвет фона, белый */
+        border: 1px solid #C1C1C1; /* размер и цвет границы блока */
+        overflow-x: scroll; /* прокрутка по горизонтали */
+        overflow-y: scroll; /* прокрутка по вертикали */
+    }
+
+    .btnWI {
+        outline: none;
+        background: #F5F6F6;
+        width: 100%;
+        border: 0;
+        border-radius: 4px;
+        padding: 12px 20px;
+        /*color: #ffffff;*/
+        font-family: inherit;
+        font-size: inherit;
+        font-weight: 500;
+        line-height: inherit;
+        text-transform: uppercase;
+        cursor: pointer;
+        /*word-wrap: break-word;*/
+    }
+
+    .two .btnWI {
+        background: #ffffff;
+        color: #4285f4;
+    }
+</style>
+
+
+@*<link rel="stylesheet" href="~/css/login.css" />*@
+<div class="row">
+    <hr />
+    <div class="prokrutka">
+
+        <table class="table_col">
+
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-default btnWI" style="height:40px;"
+                                    onclick="location.href='@Url.Action("GetUpdateWorkItemView", "WorkItem", new {id = item.Id}, null)'">
+                                @item.Title
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            }
+
+        </table>
+
+
+    </div>
+</div>
